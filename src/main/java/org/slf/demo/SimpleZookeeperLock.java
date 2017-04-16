@@ -20,7 +20,7 @@ public class SimpleZookeeperLock {
     private String groupNode = "locks";
     private String subNode = "sub";
 
-    private ZooKeeper zookeeper;
+    private ZooKeeper zkClient;
     private volatile String thisPath;
     private volatile String waitPath;
 
@@ -28,7 +28,7 @@ public class SimpleZookeeperLock {
 
     public void connectZookeeper() throws Exception {
 
-        zookeeper = new ZooKeeper(hosts, SESSION_TIMEOUT, watchedEvent -> {
+        zkClient = new ZooKeeper(hosts, SESSION_TIMEOUT, watchedEvent -> {
             if (watchedEvent.getState() == Watcher.Event.KeeperState.SyncConnected) {
                 countDownLatch.countDown();
             }
@@ -44,11 +44,11 @@ public class SimpleZookeeperLock {
 
         countDownLatch.await();
 
-        thisPath = zookeeper.create("/" + groupNode + "/" + subNode, null, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL_SEQUENTIAL);
+        thisPath = zkClient.create("/" + groupNode + "/" + subNode, null, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL_SEQUENTIAL);
 
         Thread.sleep(10);
 
-        List<String> childrenNodes = zookeeper.getChildren("/" + groupNode, false);
+        List<String> childrenNodes = zkClient.getChildren("/" + groupNode, false);
 
         if (childrenNodes.size() == 1) {
             doSomething();
@@ -62,7 +62,7 @@ public class SimpleZookeeperLock {
                 doSomething();
             } else {
                 this.waitPath = "/" + groupNode + "/" + childrenNodes.get(index - 1);
-                zookeeper.getData(waitPath, true, new Stat());
+                zkClient.getData(waitPath, true, new Stat());
             }
         }
 
@@ -76,7 +76,7 @@ public class SimpleZookeeperLock {
             //do something
         } finally {
             LOG.warn("finished: " + thisPath);
-            zookeeper.delete(thisPath, -1);
+            zkClient.delete(thisPath, -1);
         }
 
     }
