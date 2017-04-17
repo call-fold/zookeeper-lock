@@ -11,6 +11,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
+/**
+ * The type Simple zookeeper lock.
+ */
 public class SimpleZookeeperLock {
 
     private static final Logger LOG = LoggerFactory.getLogger(SimpleZookeeperLock.class);
@@ -26,6 +29,11 @@ public class SimpleZookeeperLock {
 
     private CountDownLatch countDownLatch = new CountDownLatch(1);
 
+    /**
+     * Connect zookeeper.
+     *
+     * @throws Exception the exception
+     */
     public void connectZookeeper() throws Exception {
 
         zkClient = new ZooKeeper(hosts, SESSION_TIMEOUT, watchedEvent -> {
@@ -81,6 +89,12 @@ public class SimpleZookeeperLock {
 
     }
 
+    /**
+     * The entry point of application.
+     *
+     * @param args the input arguments
+     * @throws InterruptedException the interrupted exception
+     */
     public static void main(String[] args) throws InterruptedException {
         for (int i = 0; i < 5; i++)
             new Thread(() -> {

@@ -13,10 +13,16 @@ import java.util.concurrent.Executors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The type Test boolean mutex.
+ */
 public class TestBooleanMutex {
 
     private static final Logger LOG = LoggerFactory.getLogger(TestBooleanMutex.class);
 
+    /**
+     * Test init true.
+     */
     @Test
     public void test_init_true() {
         BooleanMutex mutex = new BooleanMutex(true);
@@ -28,6 +34,9 @@ public class TestBooleanMutex {
         }
     }
 
+    /**
+     * Test init false.
+     */
     @Test
     public void test_init_false() {
         final BooleanMutex mutex = new BooleanMutex(false);
@@ -56,6 +65,9 @@ public class TestBooleanMutex {
         }
     }
 
+    /**
+     * Test concurrent true.
+     */
     @Test
     public void test_concurrent_true() {
         try {
@@ -80,6 +92,9 @@ public class TestBooleanMutex {
         }
     }
 
+    /**
+     * Test concurrent false.
+     */
     @Test
     public void test_concurrent_false() {
         try {
