@@ -5,15 +5,26 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.AbstractQueuedSynchronizer;
 
+/**
+ * The type Boolean mutex.
+ */
 public class BooleanMutex {
 
     private Sync sync;
 
+    /**
+     * Instantiates a new Boolean mutex.
+     */
     public BooleanMutex() {
         sync = new Sync();
         set(false);
     }
 
+    /**
+     * Instantiates a new Boolean mutex.
+     *
+     * @param mutex the mutex
+     */
     public BooleanMutex(Boolean mutex) {
         sync = new Sync();
         set(mutex);
@@ -22,7 +33,7 @@ public class BooleanMutex {
     /**
      * 阻塞等待Boolean为true
      *
-     * @throws InterruptedException
+     * @throws InterruptedException the interrupted exception
      */
     public void get() throws InterruptedException {
         sync.innerGet();
@@ -31,10 +42,10 @@ public class BooleanMutex {
     /**
      * 阻塞等待Boolean为true,允许设置超时时间
      *
-     * @param timeout
-     * @param unit
-     * @throws InterruptedException
-     * @throws TimeoutException
+     * @param timeout the timeout
+     * @param unit    the unit
+     * @throws InterruptedException the interrupted exception
+     * @throws TimeoutException     the timeout exception
      */
     public void get(long timeout, TimeUnit unit) throws InterruptedException, TimeoutException {
         sync.innerGet(unit.toNanos(timeout));
@@ -43,7 +54,7 @@ public class BooleanMutex {
     /**
      * 重新设置对应的Boolean mutex
      *
-     * @param mutex
+     * @param mutex the mutex
      */
     public void set(Boolean mutex) {
         if (mutex) {
@@ -53,6 +64,11 @@ public class BooleanMutex {
         }
     }
 
+    /**
+     * State boolean.
+     *
+     * @return the boolean
+     */
     public boolean state() {
         return sync.innerState();
     }
@@ -94,19 +110,39 @@ public class BooleanMutex {
             return true;
         }
 
+        /**
+         * Inner state boolean.
+         *
+         * @return the boolean
+         */
         boolean innerState() {
             return isTrue(getState());
         }
 
+        /**
+         * Inner get.
+         *
+         * @throws InterruptedException the interrupted exception
+         */
         void innerGet() throws InterruptedException {
             acquireSharedInterruptibly(0);
         }
 
+        /**
+         * Inner get.
+         *
+         * @param nanosTimeout the nanos timeout
+         * @throws InterruptedException the interrupted exception
+         * @throws TimeoutException     the timeout exception
+         */
         void innerGet(long nanosTimeout) throws InterruptedException, TimeoutException {
             if (!tryAcquireSharedNanos(0, nanosTimeout))
                 throw new TimeoutException();
         }
 
+        /**
+         * Inner set true.
+         */
         void innerSetTrue() {
             for (; ; ) {
                 int s = getState();
@@ -119,6 +155,9 @@ public class BooleanMutex {
             }
         }
 
+        /**
+         * Inner set false.
+         */
         void innerSetFalse() {
             for (; ; ) {
                 int s = getState();
